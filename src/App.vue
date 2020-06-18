@@ -1,28 +1,51 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <HeroActions msg="some prop"/>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import HeroActions from './components/HeroActions.vue'
+
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    HeroActions
+  },
+  data: function() {
+    return {
+      heroHealth: 100,
+      heroRubies: 0,
+      heroWeapons: ['sword'],
+      heroPotion: 0,
+      beginBattleText: [
+        'A monster attacks you!',
+        'You sneak up on a monster',
+      ],
+    }
+  },
+  created: function() {
+    this.fetchData();
+  },
+  methods: {
+    fetchData: function() {
+      console.log('weee');
+    }
   }
 }
 </script>
 
 <style>
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  height: 100vh;
+  min-height: 100vh;
 }
 </style>
