@@ -1,51 +1,76 @@
 <template>
   <div id="app">
-    <HeroActions msg="some prop"/>
+    <HeroStatus :heroHealth="heroHealth" />
+    <ul>
+      <li v-for="item in battleText" v-bind:key="item">{{ item }}</li>
+    </ul>
+    <HeroActions />
   </div>
 </template>
 
 <script>
-import HeroActions from './components/HeroActions.vue'
-
+import HeroActions from "./components/HeroActions.vue";
+import HeroStatus from "./components/HeroStatus.vue";
 
 export default {
-  name: 'App',
+  name: "App",
   components: {
-    HeroActions
+    HeroActions,
+    HeroStatus
   },
   data: function() {
     return {
       heroHealth: 100,
       heroRubies: 0,
-      heroWeapons: ['sword'],
+      heroWeapons: ["sword"],
       heroPotion: 0,
-      beginBattleText: [
-        'A monster attacks you!',
-        'You sneak up on a monster',
-      ],
-    }
+      battleText: [],
+      beginBattleText: {
+        youStart: {
+          text: "You sneak up on a monster. What do you want to do?"
+        },
+        theyStart: {
+          text: "A monster attacks you!",
+          health: -1
+        }
+      }
+    };
   },
   created: function() {
-    this.fetchData();
+    this.getBeginBattleText();
   },
   methods: {
-    fetchData: function() {
-      console.log('weee');
+    getBeginBattleText: function() {
+      const battleIntro = this.beginBattleText;
+
+      // get random number
+      const randomPick = Math.floor(
+        Math.random() * Object.keys(battleIntro).length
+      );
+
+      var whoStarts = Object.keys(battleIntro)[randomPick];
+      var text = battleIntro[whoStarts].text;
+      var health = battleIntro[whoStarts].health;
+
+      if (text) {
+        // this.battleText = text;
+        this.battleText.push(text);
+      }
+
+      if (health) {
+        this.heroHealth = this.heroHealth + health;
+      }
+
+      // console.log(text, health);
     }
   }
-}
+};
 </script>
 
-<style>
+<style lang="scss" scoped>
 #app {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  width: 100%;
-  height: 100vh;
-  min-height: 100vh;
+  p {
+    padding: 20px;
+  }
 }
 </style>
