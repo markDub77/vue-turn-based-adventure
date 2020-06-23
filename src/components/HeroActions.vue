@@ -3,12 +3,14 @@
     <!-- <button class="actions__button nes-btn" @click="walk">Walk</button> -->
     <button class="actions__button nes-btn" @click="attack">Attack</button>
     <button class="actions__button nes-btn" @click="runAway">Run Away</button>
+    <button @click="ok" class="actions__button nes-btn">Ok</button>
   </div>
 </template>
 
 <script>
 export default {
   name: "HeroActions",
+  props: ["parentmessage"],
   data() {
     return {
       counter: 0,
@@ -60,6 +62,9 @@ export default {
         this.enemyHealth = this.enemyHealth + damage;
         console.log("damage", damage);
       }
+    },
+    ok() {
+      this.$emit("finished");
     }
   }
 };

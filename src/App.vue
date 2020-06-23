@@ -1,10 +1,10 @@
 <template>
   <div id="app">
     <HeroStatus :heroHealth="heroHealth" />
-    <ul>
-      <li v-for="item in battleText" v-bind:key="item">{{ item }}</li>
+    <ul class="battleConsole">
+      <li class="battleConsole__item" v-for="item in battleText" v-bind:key="item">{{ item }}</li>
     </ul>
-    <HeroActions />
+    <HeroActions @finished="finished" />
   </div>
 </template>
 
@@ -62,6 +62,10 @@ export default {
       }
 
       // console.log(text, health);
+    },
+    finished() {
+      this.parentmessage = "sldkfljsadlfkj";
+      this.battleText.push("sldkfljsadlfkj");
     }
   }
 };
@@ -71,6 +75,17 @@ export default {
 #app {
   p {
     padding: 20px;
+  }
+  .battleConsole {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    &__item {
+      padding: 20px;
+      // background: gray;
+      border-bottom: 2px solid gray;
+    }
   }
 }
 </style>
