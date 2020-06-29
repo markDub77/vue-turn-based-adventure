@@ -4,7 +4,7 @@
     <ul class="battleConsole">
       <li class="battleConsole__item" v-for="item in battleText" v-bind:key="item">{{ item }}</li>
     </ul>
-    <HeroActions @finished="finished" />
+    <HeroActions @changeMsg="heroActs" />
   </div>
 </template>
 
@@ -21,6 +21,7 @@ export default {
   data: function() {
     return {
       heroHealth: 100,
+      enemyHealth: 100,
       heroRubies: 0,
       heroWeapons: ["sword"],
       heroPotion: 0,
@@ -31,9 +32,19 @@ export default {
         },
         theyStart: {
           text: "A monster attacks you!",
-          health: -1
+          damage: 1
         }
-      }
+      },
+      enemyAttackPossibilities: [
+        {
+          text: "The monster swings and misses!",
+          damage: 0
+        },
+        {
+          text: "The monster has hit you and injured you",
+          damage: 1
+        }
+      ]
     };
   },
   created: function() {
@@ -50,22 +61,41 @@ export default {
 
       var whoStarts = Object.keys(battleIntro)[randomPick];
       var text = battleIntro[whoStarts].text;
-      var health = battleIntro[whoStarts].health;
+      var damage = battleIntro[whoStarts].damage;
 
       if (text) {
-        // this.battleText = text;
         this.battleText.push(text);
       }
 
-      if (health) {
-        this.heroHealth = this.heroHealth + health;
+      if (damage) {
+        this.heroHealth = this.heroHealth - damage;
+        this.battleText.push(`You lose ${damage} health`);
       }
-
-      // console.log(text, health);
     },
-    finished() {
-      this.parentmessage = "sldkfljsadlfkj";
-      this.battleText.push("sldkfljsadlfkj");
+    heroActs(msg) {
+      this.battleText.push(msg.text);
+      this.battleText.push(`Monster loses ${msg.damage} health`);
+      this.enemyHealth = this.enemyHealth - msg.damage;
+      this.enemyActs();
+    },
+    randomPick(obj) {
+      return Math.floor(Math.random() * Object.keys(obj).length);
+    },
+    enemyActs() {
+      if (this.enemyHealth > 0) {
+        const enemyAttack = this.enemyAttackPossibilities[
+          this.randomPick(this.enemyAttackPossibilities)
+        ];
+
+        this.battleText.push(enemyAttack.text);
+
+        if (enemyAttack.damage) {
+          this.heroHealth = this.heroHealth - enemyAttack.damage;
+          this.battleText.push(`You lose ${enemyAttack.damage} health`);
+        }
+      } else {
+        this.battleText.push(`The monster is dead. Check for loot.`);
+      }
     }
   }
 };
@@ -80,6 +110,8 @@ export default {
     list-style: none;
     padding: 0;
     margin: 0;
+    overflow: auto;
+    height: calc(100vh - 314px);
 
     &__item {
       padding: 20px;

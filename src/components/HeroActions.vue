@@ -3,14 +3,12 @@
     <!-- <button class="actions__button nes-btn" @click="walk">Walk</button> -->
     <button class="actions__button nes-btn" @click="attack">Attack</button>
     <button class="actions__button nes-btn" @click="runAway">Run Away</button>
-    <button @click="ok" class="actions__button nes-btn">Ok</button>
   </div>
 </template>
 
 <script>
 export default {
   name: "HeroActions",
-  props: ["parentmessage"],
   data() {
     return {
       counter: 0,
@@ -40,8 +38,6 @@ export default {
   },
   methods: {
     attack() {
-      // this.counter = Math.ceil(Math.random() * 6);
-      // a random chance action takes place
       // get random number
       const randomPick = Math.floor(
         Math.random() * Object.keys(this.attackPossibilities).length
@@ -53,18 +49,11 @@ export default {
       var text = this.attackPossibilities[attack].text;
       var damage = this.attackPossibilities[attack].damage;
 
-      if (text) {
-        this.battleText = text;
-        console.log("text", text);
-      }
+      this.$emit("changeMsg", { text: text, damage: damage });
 
       if (damage) {
         this.enemyHealth = this.enemyHealth + damage;
-        console.log("damage", damage);
       }
-    },
-    ok() {
-      this.$emit("finished");
     }
   }
 };
@@ -81,8 +70,9 @@ export default {
   padding: 20px;
   width: 100%;
   margin: 0 auto !important;
-  position: absolute;
+  position: fixed;
   bottom: 0;
+  background: #fff;
 
   &__button {
     width: 100%;
