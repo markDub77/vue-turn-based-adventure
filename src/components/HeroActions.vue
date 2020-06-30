@@ -66,12 +66,7 @@ export default {
 }
 .actions {
   font-family: "Press Start 2P", cursive;
-  // margin: 0 auto;
   padding: 20px;
-  width: 100%;
-  margin: 0 auto !important;
-  position: fixed;
-  bottom: 0;
   background: #fff;
 
   &__button {

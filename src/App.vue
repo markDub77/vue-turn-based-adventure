@@ -1,9 +1,11 @@
 <template>
   <div id="app">
     <HeroStatus :heroHealth="heroHealth" />
-    <ul class="battleConsole">
-      <li class="battleConsole__item" v-for="item in battleText" v-bind:key="item">{{ item }}</li>
-    </ul>
+    <div class="battle-console">
+      <ul class="battle-console__list">
+        <li class="battle-console__item" v-for="item in battleText" v-bind:key="item">{{ item }}</li>
+      </ul>
+    </div>
     <HeroActions @changeMsg="heroActs" />
   </div>
 </template>
@@ -50,7 +52,15 @@ export default {
   created: function() {
     this.getBeginBattleText();
   },
+  updated: function () {
+    this.$nextTick(function () { // if you want to wait until the entire view has been re-rendered
+      this.checkOverflow();
+    })
+  },
   methods: {
+    randomPick(obj) {
+      return Math.floor(Math.random() * Object.keys(obj).length);
+    },
     getBeginBattleText: function() {
       const battleIntro = this.beginBattleText;
 
@@ -77,9 +87,7 @@ export default {
       this.battleText.push(`Monster loses ${msg.damage} health`);
       this.enemyHealth = this.enemyHealth - msg.damage;
       this.enemyActs();
-    },
-    randomPick(obj) {
-      return Math.floor(Math.random() * Object.keys(obj).length);
+      this.checkOverflow();
     },
     enemyActs() {
       if (this.enemyHealth > 0) {
@@ -96,6 +104,17 @@ export default {
       } else {
         this.battleText.push(`The monster is dead. Check for loot.`);
       }
+    },
+    checkOverflow() {
+      const battleConsoleHeight = document.querySelector('.battle-console').clientHeight;
+      const battleConsoleListHeight = document.querySelector('.battle-console__list').clientHeight;
+
+      if (battleConsoleListHeight >= battleConsoleHeight) {
+        console.log('overflow is happening')
+        console.log('battleConsoleHeight', battleConsoleHeight)
+        console.log('battleConsoleListHeight', battleConsoleListHeight)
+        document.querySelector('.battle-console').classList.add('overflowing');
+      }
     }
   }
 };
@@ -103,21 +122,36 @@ export default {
 
 <style lang="scss" scoped>
 #app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+
+
   p {
     padding: 20px;
   }
-  .battleConsole {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+
+  .battle-console {
+    display: flex;
+    flex: 1 1 auto;
     overflow: auto;
-    height: calc(100vh - 314px);
+
+    &.overflowing {
+      flex-direction: column-reverse;
+    }
+
+    &__list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
 
     &__item {
       padding: 20px;
-      // background: gray;
       border-bottom: 2px solid gray;
     }
+
+
   }
 }
 </style>
