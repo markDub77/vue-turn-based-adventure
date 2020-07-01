@@ -62,6 +62,20 @@ export default {
     randomPick(obj) {
       return Math.floor(Math.random() * Object.keys(obj).length);
     },
+    checkOverflow() {
+      const battleConsoleHeight = document.querySelector(".battle-console")
+        .clientHeight;
+      const battleConsoleListHeight = document.querySelector(
+        ".battle-console__list"
+      ).clientHeight;
+
+      if (battleConsoleListHeight >= battleConsoleHeight) {
+        console.log("overflow is happening");
+        console.log("battleConsoleHeight", battleConsoleHeight);
+        console.log("battleConsoleListHeight", battleConsoleListHeight);
+        document.querySelector(".battle-console").classList.add("overflowing");
+      }
+    },
     getBeginBattleText: function() {
       const battleIntro = this.beginBattleText;
 
@@ -77,31 +91,26 @@ export default {
       if (text) {
         setTimeout(() => {
           this.battleText.push(text);
-        }, 2000);
+        }, 1000);
       }
 
       if (damage) {
         setTimeout(() => {
           this.heroHealth = this.heroHealth - damage;
-        }, 2000);
-
-        setTimeout(() => {
-          this.battleText.push(`You lose ${damage} health`);
-        }, 2000);
+          setTimeout(() => {
+            this.battleText.push(`You lose ${damage} health`);
+          }, 1000);
+        }, 1000);
       }
     },
     heroActs(msg) {
-      setTimeout(() => {
-        this.battleText.push(msg.text);
-      }, 2000);
-
+      this.battleText.push(msg.text);
       setTimeout(() => {
         this.battleText.push(`Monster loses ${msg.damage} health`);
-      }, 2000);
-
-      this.enemyHealth = this.enemyHealth - msg.damage;
-      this.enemyActs();
-      this.checkOverflow();
+        this.enemyHealth = this.enemyHealth - msg.damage;
+        this.checkOverflow();
+        this.enemyActs();
+      }, 1000);
     },
     enemyActs() {
       if (this.enemyHealth > 0) {
@@ -114,32 +123,17 @@ export default {
         if (enemyAttack.damage) {
           setTimeout(() => {
             this.heroHealth = this.heroHealth - enemyAttack.damage;
-          }, 2000);
-          setTimeout(() => {
+            setTimeout(() => {
             this.battleText.push(`You lose ${enemyAttack.damage} health`);
-            console.log(this.battleText);
-          }, 2000);
+            }, 1000);
+          }, 1000);
         }
       } else {
         setTimeout(() => {
           this.battleText.push(`The monster is dead. Check for loot.`);
-        }, 2000);
+        }, 1000);
       }
     },
-    checkOverflow() {
-      const battleConsoleHeight = document.querySelector(".battle-console")
-        .clientHeight;
-      const battleConsoleListHeight = document.querySelector(
-        ".battle-console__list"
-      ).clientHeight;
-
-      if (battleConsoleListHeight >= battleConsoleHeight) {
-        console.log("overflow is happening");
-        console.log("battleConsoleHeight", battleConsoleHeight);
-        console.log("battleConsoleListHeight", battleConsoleListHeight);
-        document.querySelector(".battle-console").classList.add("overflowing");
-      }
-    }
   }
 };
 </script>
