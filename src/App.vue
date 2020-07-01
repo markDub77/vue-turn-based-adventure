@@ -52,10 +52,11 @@ export default {
   created: function() {
     this.getBeginBattleText();
   },
-  updated: function () {
-    this.$nextTick(function () { // if you want to wait until the entire view has been re-rendered
+  updated: function() {
+    this.$nextTick(function() {
+      // if you want to wait until the entire view has been re-rendered
       this.checkOverflow();
-    })
+    });
   },
   methods: {
     randomPick(obj) {
@@ -74,17 +75,30 @@ export default {
       var damage = battleIntro[whoStarts].damage;
 
       if (text) {
-        this.battleText.push(text);
+        setTimeout(() => {
+          this.battleText.push(text);
+        }, 2000);
       }
 
       if (damage) {
-        this.heroHealth = this.heroHealth - damage;
-        this.battleText.push(`You lose ${damage} health`);
+        setTimeout(() => {
+          this.heroHealth = this.heroHealth - damage;
+        }, 2000);
+
+        setTimeout(() => {
+          this.battleText.push(`You lose ${damage} health`);
+        }, 2000);
       }
     },
     heroActs(msg) {
-      this.battleText.push(msg.text);
-      this.battleText.push(`Monster loses ${msg.damage} health`);
+      setTimeout(() => {
+        this.battleText.push(msg.text);
+      }, 2000);
+
+      setTimeout(() => {
+        this.battleText.push(`Monster loses ${msg.damage} health`);
+      }, 2000);
+
       this.enemyHealth = this.enemyHealth - msg.damage;
       this.enemyActs();
       this.checkOverflow();
@@ -98,22 +112,32 @@ export default {
         this.battleText.push(enemyAttack.text);
 
         if (enemyAttack.damage) {
-          this.heroHealth = this.heroHealth - enemyAttack.damage;
-          this.battleText.push(`You lose ${enemyAttack.damage} health`);
+          setTimeout(() => {
+            this.heroHealth = this.heroHealth - enemyAttack.damage;
+          }, 2000);
+          setTimeout(() => {
+            this.battleText.push(`You lose ${enemyAttack.damage} health`);
+            console.log(this.battleText);
+          }, 2000);
         }
       } else {
-        this.battleText.push(`The monster is dead. Check for loot.`);
+        setTimeout(() => {
+          this.battleText.push(`The monster is dead. Check for loot.`);
+        }, 2000);
       }
     },
     checkOverflow() {
-      const battleConsoleHeight = document.querySelector('.battle-console').clientHeight;
-      const battleConsoleListHeight = document.querySelector('.battle-console__list').clientHeight;
+      const battleConsoleHeight = document.querySelector(".battle-console")
+        .clientHeight;
+      const battleConsoleListHeight = document.querySelector(
+        ".battle-console__list"
+      ).clientHeight;
 
       if (battleConsoleListHeight >= battleConsoleHeight) {
-        console.log('overflow is happening')
-        console.log('battleConsoleHeight', battleConsoleHeight)
-        console.log('battleConsoleListHeight', battleConsoleListHeight)
-        document.querySelector('.battle-console').classList.add('overflowing');
+        console.log("overflow is happening");
+        console.log("battleConsoleHeight", battleConsoleHeight);
+        console.log("battleConsoleListHeight", battleConsoleListHeight);
+        document.querySelector(".battle-console").classList.add("overflowing");
       }
     }
   }
@@ -126,17 +150,16 @@ export default {
   flex-direction: column;
   height: 100vh;
 
-
   p {
     padding: 20px;
   }
 
   .battle-console {
-    display: flex;
-    flex: 1 1 auto;
     overflow: auto;
+    height: 100vh;
 
     &.overflowing {
+      display: flex;
       flex-direction: column-reverse;
     }
 
@@ -150,8 +173,6 @@ export default {
       padding: 20px;
       border-bottom: 2px solid gray;
     }
-
-
   }
 }
 </style>
