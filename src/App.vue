@@ -3,16 +3,21 @@
     <HeroStatus :heroHealth="heroHealth" />
     <div class="battle-console">
       <ul class="battle-console__list">
-        <li class="battle-console__item" v-for="item in battleText" v-bind:key="item">{{ item }}</li>
+        <li
+          class="battle-console__item"
+          v-for="(item, i) in battleConsole"
+          :key="`${i}-${item}`"
+        >{{ item }}</li>
       </ul>
     </div>
-    <HeroActions @changeMsg="heroActs" />
+    <HeroActions @heroActs="heroActs" />
   </div>
 </template>
 
 <script>
 import HeroActions from "./components/HeroActions.vue";
 import HeroStatus from "./components/HeroStatus.vue";
+import data from "./data.js";
 
 export default {
   name: "App",
@@ -22,42 +27,22 @@ export default {
   },
   data: function() {
     return {
-      heroHealth: 100,
-      enemyHealth: 100,
-      heroRubies: 0,
-      heroWeapons: ["sword"],
-      heroPotion: 0,
-      battleText: [],
-      beginBattleText: {
-        youStart: {
-          text: "You sneak up on a monster. What do you want to do?"
-        },
-        theyStart: {
-          text: "A monster attacks you!",
-          damage: 1
-        }
-      },
-      enemyAttackPossibilities: [
-        {
-          text: "The monster swings and misses!",
-          damage: 0
-        },
-        {
-          text: "The monster has hit you and injured you",
-          damage: 1
-        }
-      ]
+      data,
+      heroHealth: data.heroHealth,
+      battleConsole: data.battleConsole
     };
   },
   created: function() {
-    this.getBeginBattleText();
+    this.battleBegins();
   },
+
   updated: function() {
     this.$nextTick(function() {
       // if you want to wait until the entire view has been re-rendered
       this.checkOverflow();
     });
   },
+
   methods: {
     randomPick(obj) {
       return Math.floor(Math.random() * Object.keys(obj).length);
@@ -70,70 +55,62 @@ export default {
       ).clientHeight;
 
       if (battleConsoleListHeight >= battleConsoleHeight) {
-        console.log("overflow is happening");
-        console.log("battleConsoleHeight", battleConsoleHeight);
-        console.log("battleConsoleListHeight", battleConsoleListHeight);
         document.querySelector(".battle-console").classList.add("overflowing");
       }
     },
-    getBeginBattleText: function() {
-      const battleIntro = this.beginBattleText;
+    battleBegins() {
+      const battleIntro = this.data.battleData.beginBattle;
+      const whoStarts = Object.keys(battleIntro)[this.randomPick(battleIntro)];
 
-      // get random number
-      const randomPick = Math.floor(
-        Math.random() * Object.keys(battleIntro).length
-      );
-
-      var whoStarts = Object.keys(battleIntro)[randomPick];
       var text = battleIntro[whoStarts].text;
       var damage = battleIntro[whoStarts].damage;
 
-      if (text) {
-        setTimeout(() => {
-          this.battleText.push(text);
-        }, 1000);
-      }
+      this.battleConsole.push(text);
 
       if (damage) {
         setTimeout(() => {
+          this.battleConsole.push(`You lose ${damage} health`);
           this.heroHealth = this.heroHealth - damage;
-          setTimeout(() => {
-            this.battleText.push(`You lose ${damage} health`);
-          }, 1000);
         }, 1000);
       }
     },
-    heroActs(msg) {
-      this.battleText.push(msg.text);
+    heroActs() {
+      const heroAttack = this.data.battleData.heroAttackPossibilities[
+        this.randomPick(this.data.battleData.heroAttackPossibilities)
+      ];
+
+      this.battleConsole.push(heroAttack.text);
+
       setTimeout(() => {
-        this.battleText.push(`Monster loses ${msg.damage} health`);
-        this.enemyHealth = this.enemyHealth - msg.damage;
-        this.checkOverflow();
+        if (heroAttack.damage) {
+          this.battleConsole.push(`Monster loses ${heroAttack.damage} health`);
+          this.enemyHealth = this.enemyHealth - heroAttack.damage;
+        }
         this.enemyActs();
       }, 1000);
     },
     enemyActs() {
       if (this.enemyHealth > 0) {
-        const enemyAttack = this.enemyAttackPossibilities[
-          this.randomPick(this.enemyAttackPossibilities)
+        const enemyAttack = this.data.battleData.enemyAttackPossibilities[
+          this.randomPick(this.data.battleData.enemyAttackPossibilities)
         ];
 
-        this.battleText.push(enemyAttack.text);
+        this.battleConsole.push(enemyAttack.text);
 
         if (enemyAttack.damage) {
           setTimeout(() => {
             this.heroHealth = this.heroHealth - enemyAttack.damage;
             setTimeout(() => {
-            this.battleText.push(`You lose ${enemyAttack.damage} health`);
+              this.battleConsole.push(`You lose ${enemyAttack.damage} health`);
             }, 1000);
           }, 1000);
         }
       } else {
         setTimeout(() => {
-          this.battleText.push(`The monster is dead. Check for loot.`);
+          this.battleConsole.push(`The monster is dead. Check for loot.`);
         }, 1000);
       }
-    },
+    }
   }
 };
 </script>
