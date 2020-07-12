@@ -1,17 +1,24 @@
 <template>
   <div class="actions nes-container">
-    <!-- <button class="actions__button nes-btn" @click="walk">Walk</button> -->
-    <button class="actions__button nes-btn" @click="attack">Attack</button>
-    <!-- <button class="actions__button nes-btn" @click="runAway">Run Away</button> -->
+    <button v-if="heroAttackOption" class="actions__button nes-btn" @click="attack">Attack</button>
+    <button v-if="heroSneakOption" class="actions__button nes-btn" @click="sneak">Sneak Away</button>
+    <button v-if="heroWalkOption" class="actions__button nes-btn" @click="walk">Walk</button>
+    <button v-if="heroRunOption" class="actions__button nes-btn" @click="run">Run</button>
   </div>
 </template>
 
 <script>
 export default {
   name: "HeroActions",
+  props: {
+    heroSneakOption: Boolean,
+    heroWalkOption: Boolean,
+    heroRunOption: Boolean,
+    heroAttackOption: Boolean
+  },
   methods: {
     attack() {
-      this.$emit("heroActs");
+      this.$emit("heroAttacks");
     }
   }
 };
@@ -25,6 +32,7 @@ export default {
   font-family: "Press Start 2P", cursive;
   padding: 20px;
   background: #fff;
+  min-height: 240px;
 
   &__button {
     width: 100%;

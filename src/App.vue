@@ -10,7 +10,13 @@
         >{{ item }}</li>
       </ul>
     </div>
-    <HeroActions @heroActs="heroActs" />
+    <HeroActions
+      :heroAttackOption="heroAttackOption"
+      :heroSneakOption="heroSneakOption"
+      :heroWalkOption="heroWalkOption"
+      :heroRunOption="heroRunOption"
+      @heroAttacks="heroAttacks"
+    />
   </div>
 </template>
 
@@ -29,10 +35,15 @@ export default {
     return {
       data,
       heroHealth: data.heroHealth,
-      battleConsole: data.battleConsole
+      battleConsole: data.battleConsole,
+      heroAttackOption: false,
+      heroSneakOption: false,
+      heroWalkOption: false,
+      heroRunOption: false
     };
   },
   created: function() {
+    this.battleConsole = [];
     this.battleBegins();
   },
 
@@ -59,40 +70,83 @@ export default {
       }
     },
     battleBegins() {
-      const battleIntro = this.data.battleData.beginBattle;
-      const whoStarts = Object.keys(battleIntro)[this.randomPick(battleIntro)];
+      const battleIntro = this.data.beginBattle;
+      const enemies = this.data.enemies;
 
-      var text = battleIntro[whoStarts].text;
-      var damage = battleIntro[whoStarts].damage;
+      // coin flip to pick enemy
+      this.enemy = Object.keys(enemies)[this.randomPick(enemies)];
 
+      // coin flip to pick who goes first
+      const index = Object.keys(battleIntro)[this.randomPick(battleIntro)];
+
+      const text = battleIntro[index].text.replace(/%ENEMY%/gi, this.enemy);
+      const damage = battleIntro[index].damage;
+
+      // set state
+      this.heroSneakOption = battleIntro[index].heroSneakOption;
+
+      // output to console
       this.battleConsole.push(text);
 
+      // math the health
       if (damage) {
+        // set state
+        this.heroAttackOption = false;
+
         setTimeout(() => {
           this.battleConsole.push(`You lose ${damage} health`);
           this.heroHealth = this.heroHealth - damage;
         }, 1000);
       }
-    },
-    heroActs() {
-      const heroAttack = this.data.battleData.heroAttackPossibilities[
-        this.randomPick(this.data.battleData.heroAttackPossibilities)
-      ];
 
-      this.battleConsole.push(heroAttack.text);
+      // set state
+      this.heroAttackOption = true;
+    },
+    heroAttacks() {
+      const heroAttackPossibilities = this.data.heroAttackPossibilities;
+      const index = this.randomPick(heroAttackPossibilities);
+      const heroAttack = heroAttackPossibilities[index];
+      let enemyHealth = this.data.enemies[this.enemy].enemyHealth;
+
+      // set state
+      this.heroAttackOption = false;
+
+      // get text from data and string replace the name
+      const text = heroAttack.text.replace(/%ENEMY%/gi, this.enemy);
+
+      // output to console
+      this.battleConsole.push(text);
 
       setTimeout(() => {
         if (heroAttack.damage) {
-          this.battleConsole.push(`Monster loses ${heroAttack.damage} health`);
-          this.enemyHealth = this.enemyHealth - heroAttack.damage;
+          console.log("heroAttack.damage", heroAttack.damage);
+          if (heroAttack.damage < 100) {
+            console.log("heroAttack.damage2", heroAttack.damage);
+            this.battleConsole.push(
+              `${this.enemy} loses ${heroAttack.damage} health`
+            );
+          }
+          enemyHealth = enemyHealth - heroAttack.damage;
+          console.log("enemyHealth", enemyHealth);
         }
-        this.enemyActs();
+        if (enemyHealth <= 0) {
+          setTimeout(() => {
+            this.battleConsole.push(
+              `The ${this.enemy} is dead. You check for loot.`
+            );
+          }, 1000);
+        } else {
+          this.enemyActs();
+        }
       }, 1000);
+
+      // set state
+      this.heroAttackOption = true;
     },
     enemyActs() {
       if (this.enemyHealth > 0) {
-        const enemyAttack = this.data.battleData.enemyAttackPossibilities[
-          this.randomPick(this.data.battleData.enemyAttackPossibilities)
+        const enemyAttack = this.data.enemyAttackPossibilities[
+          this.randomPick(this.data.enemyAttackPossibilities)
         ];
 
         this.battleConsole.push(enemyAttack.text);
@@ -105,10 +159,6 @@ export default {
             }, 1000);
           }, 1000);
         }
-      } else {
-        setTimeout(() => {
-          this.battleConsole.push(`The monster is dead. Check for loot.`);
-        }, 1000);
       }
     }
   }
@@ -120,6 +170,7 @@ export default {
   display: flex;
   flex-direction: column;
   height: 100vh;
+  overflow-x: hidden;
 
   p {
     padding: 20px;
