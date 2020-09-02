@@ -33,6 +33,7 @@ module: {
       }
     ]
   },
+
   vue: {
     loaders: {
       scss: 'style!css!sass'
