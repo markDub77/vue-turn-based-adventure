@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <HeroStatus :heroHealth="heroHealth" />
+    <HeroStatus />
     <div class="battle-console">
       <ul class="battle-console__list">
         <li
@@ -11,10 +11,6 @@
       </ul>
     </div>
     <HeroActions
-      :heroAttackOption="heroAttackOption"
-      :heroSneakOption="heroSneakOption"
-      :heroWalkOption="heroWalkOption"
-      :heroRunOption="heroRunOption"
       @heroAttacks="heroAttacks"
     />
   </div>
@@ -23,41 +19,36 @@
 <script>
 import HeroActions from "./components/HeroActions.vue";
 import HeroStatus from "./components/HeroStatus.vue";
-import data from "./data.js";
 
 export default {
   name: "App",
   components: {
     HeroActions,
-    HeroStatus
+    HeroStatus,
   },
-  data: function() {
-    return {
-      data,
-      heroHealth: data.heroHealth,
-      battleConsole: data.battleConsole,
-      heroAttackOption: false,
-      heroSneakOption: false,
-      heroWalkOption: false,
-      heroRunOption: false
-    };
-  },
+
   created: function() {
-    this.battleConsole = [];
     this.battleBegins();
   },
 
   updated: function() {
+    // if you want to wait until the entire view has been re-rendered
     this.$nextTick(function() {
-      // if you want to wait until the entire view has been re-rendered
       this.checkOverflow();
     });
+  },
+
+  computed: {
+    battleConsole() {
+      return this.$store.state.battleConsole;
+    }
   },
 
   methods: {
     randomPick(obj) {
       return Math.floor(Math.random() * Object.keys(obj).length);
     },
+
     checkOverflow() {
       const battleConsoleHeight = document.querySelector(".battle-console")
         .clientHeight;
@@ -69,9 +60,10 @@ export default {
         document.querySelector(".battle-console").classList.add("overflowing");
       }
     },
+
     battleBegins() {
-      const battleIntro = this.data.beginBattle;
-      const enemies = this.data.enemies;
+      const battleIntro = this.$store.state.beginBattle;
+      const enemies = this.$store.state.enemies;
 
       // coin flip to pick enemy
       this.enemy = Object.keys(enemies)[this.randomPick(enemies)];
@@ -80,6 +72,7 @@ export default {
       const index = Object.keys(battleIntro)[this.randomPick(battleIntro)];
 
       const text = battleIntro[index].text.replace(/%ENEMY%/gi, this.enemy);
+
       const damage = battleIntro[index].damage;
 
       // set state
@@ -95,7 +88,8 @@ export default {
 
         setTimeout(() => {
           this.battleConsole.push(`You lose ${damage} health`);
-          this.heroHealth = this.heroHealth - damage;
+          // this.heroHealth = this.heroHealth - damage;
+          this.$store.dispatch("heroDamage", damage);
         }, 1000);
       }
 
@@ -103,15 +97,15 @@ export default {
       this.heroAttackOption = true;
     },
     heroAttacks() {
-      const heroAttackPossibilities = this.data.heroAttackPossibilities;
+      const heroAttackPossibilities = this.$store.state.heroAttackPossibilities;
       const index = this.randomPick(heroAttackPossibilities);
       const heroAttack = heroAttackPossibilities[index];
-      let enemyHealth = this.data.enemies[this.enemy].enemyHealth;
+      let enemyHealth = this.$store.state.enemies[this.enemy].enemyHealth;
 
       // set state
       this.heroAttackOption = false;
 
-      // get text from data and string replace the name
+      // get text and string replace the name
       const text = heroAttack.text.replace(/%ENEMY%/gi, this.enemy);
 
       // output to console
@@ -145,8 +139,8 @@ export default {
     },
     enemyActs() {
       if (this.enemyHealth > 0) {
-        const enemyAttack = this.data.enemyAttackPossibilities[
-          this.randomPick(this.data.enemyAttackPossibilities)
+        const enemyAttack = this.$store.state.enemyAttackPossibilities[
+          this.randomPick(this.$store.state.enemyAttackPossibilities)
         ];
 
         this.battleConsole.push(enemyAttack.text);

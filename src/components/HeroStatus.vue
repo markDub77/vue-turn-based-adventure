@@ -1,24 +1,26 @@
 <template>
   <div class="status nes-container">
     <p>Health: {{heroHealth}}%</p>
-    <p>Rubies: {{rubies}}</p>
-    <p>Potions: {{potions}}</p>
+    <p>Rubies: {{heroRubies}}</p>
+    <p>Potions: {{heroPotions}}</p>
   </div>
 </template>
 
 <script>
 export default {
   name: "HeroStatus",
-  props: {
-    heroHealth: Number
-  },
-  data() {
-    return {
-      rubies: 0,
-      potions: 0
-    };
-  },
-  methods: {}
+  methods: {},
+  computed: {
+    heroHealth() {
+      return this.$store.state.heroHealth
+    },
+    heroRubies() {
+      return this.$store.state.heroRubies
+    },
+    heroPotions() {
+      return this.$store.state.heroPotions
+    }
+  }
 };
 </script>
 

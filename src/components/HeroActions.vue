@@ -10,15 +10,29 @@
 <script>
 export default {
   name: "HeroActions",
-  props: {
-    heroSneakOption: Boolean,
-    heroWalkOption: Boolean,
-    heroRunOption: Boolean,
-    heroAttackOption: Boolean
-  },
+  // props: {
+  //   heroSneakOption: Boolean,
+  //   heroWalkOption: Boolean,
+  //   heroRunOption: Boolean,
+  //   heroAttackOption: Boolean
+  // },
   methods: {
     attack() {
       this.$emit("heroAttacks");
+    }
+  },
+  computed: {
+    heroSneakOption() {
+      return this.$store.state.heroSneakOption
+    },
+    heroWalkOption() {
+      return this.$store.state.heroWalkOption
+    },
+    heroRunOption() {
+      return this.$store.state.heroRunOption
+    },
+    heroAttackOption() {
+      return this.$store.state.heroAttackOption
     }
   }
 };

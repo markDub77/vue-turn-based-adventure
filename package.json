@@ -85,7 +85,8 @@
     "webpack-dev-middleware": "^1.10.0",
     "webpack-dev-server": "^3.11.0",
     "webpack-hot-middleware": "^2.18.0",
-    "webpack-merge": "^4.1.0"
+    "webpack-merge": "^4.1.0",
+    "elliptic": ">=6.5.3"
   },
   "eslintConfig": {
     "root": true,
