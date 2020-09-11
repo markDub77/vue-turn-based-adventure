@@ -10,9 +10,7 @@
         >{{ item }}</li>
       </ul>
     </div>
-    <HeroActions
-      @heroAttacks="heroAttacks"
-    />
+    <HeroActions />
   </div>
 </template>
 
@@ -27,6 +25,12 @@ export default {
     HeroStatus,
   },
 
+  data: () => {
+    return {
+      battleConsole: [],
+    };
+  },
+
   created: function() {
     this.battleBegins();
   },
@@ -39,9 +43,6 @@ export default {
   },
 
   computed: {
-    battleConsole() {
-      return this.$store.state.battleConsole;
-    }
   },
 
   methods: {
@@ -96,47 +97,7 @@ export default {
       // set state
       this.heroAttackOption = true;
     },
-    heroAttacks() {
-      const heroAttackPossibilities = this.$store.state.heroAttackPossibilities;
-      const index = this.randomPick(heroAttackPossibilities);
-      const heroAttack = heroAttackPossibilities[index];
-      let enemyHealth = this.$store.state.enemies[this.enemy].enemyHealth;
 
-      // set state
-      this.heroAttackOption = false;
-
-      // get text and string replace the name
-      const text = heroAttack.text.replace(/%ENEMY%/gi, this.enemy);
-
-      // output to console
-      this.battleConsole.push(text);
-
-      setTimeout(() => {
-        if (heroAttack.damage) {
-          console.log("heroAttack.damage", heroAttack.damage);
-          if (heroAttack.damage < 100) {
-            console.log("heroAttack.damage2", heroAttack.damage);
-            this.battleConsole.push(
-              `${this.enemy} loses ${heroAttack.damage} health`
-            );
-          }
-          enemyHealth = enemyHealth - heroAttack.damage;
-          console.log("enemyHealth", enemyHealth);
-        }
-        if (enemyHealth <= 0) {
-          setTimeout(() => {
-            this.battleConsole.push(
-              `The ${this.enemy} is dead. You check for loot.`
-            );
-          }, 1000);
-        } else {
-          this.enemyActs();
-        }
-      }, 1000);
-
-      // set state
-      this.heroAttackOption = true;
-    },
     enemyActs() {
       if (this.enemyHealth > 0) {
         const enemyAttack = this.$store.state.enemyAttackPossibilities[

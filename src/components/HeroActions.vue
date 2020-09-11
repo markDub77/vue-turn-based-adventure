@@ -1,39 +1,29 @@
 <template>
   <div class="actions nes-container">
     <button v-if="heroAttackOption" class="actions__button nes-btn" @click="attack">Attack</button>
-    <button v-if="heroSneakOption" class="actions__button nes-btn" @click="sneak">Sneak Away</button>
-    <button v-if="heroWalkOption" class="actions__button nes-btn" @click="walk">Walk</button>
-    <button v-if="heroRunOption" class="actions__button nes-btn" @click="run">Run</button>
+    <button v-if="heroSneakOption" class="actions__button nes-btn">Sneak Away</button>
+    <button v-if="heroDrinkPotionOption" class="actions__button nes-btn">Drink Potion</button>
   </div>
 </template>
 
 <script>
+import { mapState, mapMutations } from 'vuex'
+
 export default {
-  name: "HeroActions",
-  // props: {
-  //   heroSneakOption: Boolean,
-  //   heroWalkOption: Boolean,
-  //   heroRunOption: Boolean,
-  //   heroAttackOption: Boolean
-  // },
   methods: {
     attack() {
-      this.$emit("heroAttacks");
-    }
+      this.$store.commit('heroAttacks')
+    },
+    ...mapMutations([
+      'heroAttacks',
+    ]),
   },
   computed: {
-    heroSneakOption() {
-      return this.$store.state.heroSneakOption
-    },
-    heroWalkOption() {
-      return this.$store.state.heroWalkOption
-    },
-    heroRunOption() {
-      return this.$store.state.heroRunOption
-    },
-    heroAttackOption() {
-      return this.$store.state.heroAttackOption
-    }
+    ...mapState({
+      heroSneakOption: state => state.heroActions.heroSneakOption,
+      heroAttackOption: state => state.heroActions.heroAttackOption,
+      heroDrinkPotionOption: state => state.heroActions.heroDrinkPotionOption,
+    })
   }
 };
 </script>

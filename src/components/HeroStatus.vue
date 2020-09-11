@@ -7,19 +7,16 @@
 </template>
 
 <script>
+import {mapState} from 'vuex'
+
 export default {
-  name: "HeroStatus",
   methods: {},
   computed: {
-    heroHealth() {
-      return this.$store.state.heroHealth
-    },
-    heroRubies() {
-      return this.$store.state.heroRubies
-    },
-    heroPotions() {
-      return this.$store.state.heroPotions
-    }
+    ...mapState({
+      heroHealth: state => state.heroStatus.heroHealth,
+      heroRubies: state => state.heroStatus.heroRubies,
+      heroPotions: state => state.heroStatus.heroPotions,
+    }),
   }
 };
 </script>
