@@ -1,8 +1,9 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
+import enemies from './modules/enemies.store';
 import heroStatus from './modules/heroStatus.store';
 import heroActions from './modules/heroActions.store';
-import enemies from './modules/enemies.store';
+// import randonPick from './helpers/randomPick';
 
 Vue.use(Vuex);
 
@@ -13,6 +14,8 @@ export default new Vuex.Store({
         enemies
     },
     state: {
+        battleConsole: [],
+        heroAttackOption: true,
         beginBattle: {
             heroStarts: {
                 text: "You sneak up on a %ENEMY%. What do you want to do?",
@@ -56,71 +59,26 @@ export default new Vuex.Store({
         ]
     },
     //showing things, not mutating state
+    //only needed if making computations for multiple components
     getters: {
-        // tripleCounter: state => {
-        //     return state.counter * 3;
+        // heroAttacks: state => {
+            // console.log('Hero Attacks! getter');
+            // return state.battleConsole.push('Fake enemy loses 1000 health');
         // }
     },
     //mutating the state
     //mutations are always synchronous
     mutations: {
-        //showing passed with payload, represented as num
-        // increment: (state, num) => {
-        //     state.counter += num;
-        // },
-        heroAttacks: () => {
-        //     state.heroHealth - num;
-            console.log('Hi!')
-            // state.obj.message = message
-        },
+        heroAttacks: state => {
+            state.battleConsole.push('Fake enemy loses 1000 health');
+        }
     },
     //commits the mutation, it's asynchronous
     actions: {
-        // heroDamage (context) {
-        //     context.commit('heroDamage')
-        // }
+        heroAttacks: ({ commit }) => {
+            setTimeout(() => {
+                commit('heroAttacks')
+            }, 1000)
+        }
     },
-
-    // heroAttacks() {
-        // console.log('heroAttacks!')
-        // const heroAttackPossibilities = this.$store.state.heroAttackPossibilities;
-        // const index = this.randomPick(heroAttackPossibilities);
-        // const heroAttack = heroAttackPossibilities[index];
-        // let enemyHealth = this.$store.state.enemies[this.enemy].enemyHealth;
-
-        // // set state
-        // this.heroAttackOption = false;
-
-        // // get text from data and string replace the name
-        // const text = heroAttack.text.replace(/%ENEMY%/gi, this.enemy);
-
-        // // output to console
-        // this.battleConsole.push(text);
-
-        // setTimeout(() => {
-        //   if (heroAttack.damage) {
-        //     console.log("heroAttack.damage", heroAttack.damage);
-        //     if (heroAttack.damage < 100) {
-        //       console.log("heroAttack.damage2", heroAttack.damage);
-        //       this.battleConsole.push(
-        //         `${this.enemy} loses ${heroAttack.damage} health`
-        //       );
-        //     }
-        //     enemyHealth = enemyHealth - heroAttack.damage;
-        //     console.log("enemyHealth", enemyHealth);
-        //   }
-        //   if (enemyHealth <= 0) {
-        //     setTimeout(() => {
-        //       this.battleConsole.push(
-        //         `The ${this.enemy} is dead. You check for loot.`
-        //       );
-        //     }, 1000);
-        //   } else {
-        //     this.enemyActs();
-        //   }
-        // }, 1000);
-
-        // // set state
-        // this.heroAttackOption = true;
-    // },
 });

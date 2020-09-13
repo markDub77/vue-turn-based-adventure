@@ -1,23 +1,23 @@
 <template>
   <div class="actions nes-container">
-    <button v-if="heroAttackOption" class="actions__button nes-btn" @click="attack">Attack</button>
+    <button v-if="heroAttackOption" class="actions__button nes-btn" @click="heroAttacks">Attack</button>
     <button v-if="heroSneakOption" class="actions__button nes-btn">Sneak Away</button>
     <button v-if="heroDrinkPotionOption" class="actions__button nes-btn">Drink Potion</button>
   </div>
 </template>
 
 <script>
-import { mapState, mapMutations } from 'vuex'
+import { mapState,
+  mapActions
+} from 'vuex'
 
 export default {
   methods: {
-    attack() {
-      this.$store.commit('heroAttacks')
-    },
-    ...mapMutations([
-      'heroAttacks',
+    ...mapActions([
+        'heroAttacks'
     ]),
   },
+
   computed: {
     ...mapState({
       heroSneakOption: state => state.heroActions.heroSneakOption,
