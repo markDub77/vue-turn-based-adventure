@@ -29,9 +29,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.console {
-  color: #000;
-}
+
 .actions {
   font-family: "Press Start 2P", cursive;
   padding: 20px;
