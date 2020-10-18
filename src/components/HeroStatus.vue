@@ -1,8 +1,8 @@
 <template>
   <div class="status nes-container">
-    <p>Health: {{heroHealth}}%</p>
-    <p>Rubies: {{heroRubies}}</p>
-    <p>Potions: {{heroPotions}}</p>
+    <p>Health: {{ heroHealth }}%</p>
+    <p>Rubies: {{ heroRubies }}</p>
+    <p>Potions: {{ heroPotions }}</p>
   </div>
 </template>
 

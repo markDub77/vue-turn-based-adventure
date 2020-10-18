@@ -1,27 +1,40 @@
 <template>
-    <ul class="battle-console">
+  <div class="battle-console">
+    <ul class="battle-console__list">
       <li
         class="battle-console__item"
         v-for="(item, i) in battleConsole"
         :key="`${i}-${item}`"
       >{{ item }}</li>
     </ul>
+  </div>
 </template>
 
 <script>
 import {
-  // mapActions,
-  mapMutations
+  mapActions,
+  // mapMutations
 } from 'vuex'
 
 export default {
   methods: {
-    ...mapMutations([
-        'battleBegins'
-    ]),
-    // ...mapActions([
+    // ...mapMutations([
     //     'battleBegins'
     // ]),
+    ...mapActions([
+        'battleBegins'
+    ]),
+
+    checkOverflow() {
+      const battleConsoleHeight = document.querySelector(".battle-console")
+        .clientHeight;
+      const battleConsoleListHeight = document.querySelector(
+        ".battle-console__list"
+      ).clientHeight;
+      if (battleConsoleListHeight >= battleConsoleHeight) {
+        document.querySelector(".battle-console").classList.add("overflowing");
+      }
+    }
   },
 
   computed: {
@@ -30,31 +43,37 @@ export default {
     }
   },
 
+  updated: function() {
+    // if you want to wait until the entire view has been re-rendered
+    this.$nextTick(function() {
+      this.checkOverflow();
+    });
+  },
+
   created() {
     // the action way
-    // this.$store.dispatch('battleBegins')
+    this.$store.dispatch('battleBegins')
 
     // the mutation way
-    this.battleBegins()
+    // this.battleBegins()
   },
 };
 </script>
 
 <style lang="scss" scoped>
-.console {
-  color: #000;
-}
-
 .battle-console {
   overflow: auto;
   height: 100vh;
-  list-style: none;
-  padding: 0;
-  margin: 0;
 
   &.overflowing {
     display: flex;
     flex-direction: column-reverse;
+  }
+
+  &__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
   }
 
   &__item {

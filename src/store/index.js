@@ -18,7 +18,6 @@ export default new Vuex.Store({
     },
     state: {
         enemyName: '',
-        enemyHealth: '',
         battleConsole: [],
         heroAttackOption: true,
         beginBattle: {
@@ -45,14 +44,14 @@ export default new Vuex.Store({
             text: "You swing and miss!",
             damage: 0
             },
-            {
-              text: "You cut it's head off!",
-              damage: 100
-            },
-            {
-              text: "You have slain the %ENEMY%!",
-              damage: 100
-            },
+            // {
+            //   text: "You cut it's head off!",
+            //   damage: 100
+            // },
+            // {
+            //   text: "You have slain the %ENEMY%!",
+            //   damage: 100
+            // },
             {
             text: "You have hit the %ENEMY% and injured it",
             damage: 5
@@ -70,7 +69,21 @@ export default new Vuex.Store({
     //mutating the state
     //mutations are always synchronous
     mutations: {
-        battleBegins: state => {
+        updateBattleConsole: (state, { text }) => {
+            state.battleConsole.push(text);
+        },
+
+        updateHeroHealth: (state, { damage }) => {
+            heroStatus.state.heroHealth = heroStatus.state.heroHealth - damage
+        },
+
+        updateEnemyHealth: (state, { damage }) => {
+            enemiesStore.state.enemies[state.enemyName].enemyHealth = enemiesStore.state.enemies[state.enemyName].enemyHealth - damage
+        }
+    },
+    // commits the mutation, it's asynchronous
+    actions: {
+        battleBegins: ({state, commit}) => {
             const enemies = enemiesStore.state.enemies;
             const battleIntro = state.beginBattle
 
@@ -79,55 +92,66 @@ export default new Vuex.Store({
 
             // coin flip to pick who goes first
             const index = Object.keys(battleIntro)[randomPick(battleIntro)];
-
             const text = battleIntro[index].text.replace(/%ENEMY%/gi, state.enemyName);
-
-            // set state
-            // this.heroSneakOption = battleIntro[index].heroSneakOption;
-            state.battleConsole.push(text);
-
             const damage = battleIntro[index].damage;
+
+            commit('updateBattleConsole', {text})
 
             // math the health
             if (damage) {
-                // set state
-                // this.heroAttackOption = false;
+                const text = `You lose ${damage} health`
+
                 setTimeout(() => {
-                    state.battleConsole.push(`You lose ${damage} health`);
-                    heroStatus.state.heroHealth = heroStatus.state.heroHealth - damage;
-                    // this.$store.dispatch("heroDamage", damage);
+                    commit('updateBattleConsole', {text})
+                    commit('updateHeroHealth', {damage})
                 }, 1000);
             }
         },
 
-        heroAttacks: (state, { text }) => {
-            state.battleConsole.push(text);
-        }
-    },
-    // commits the mutation, it's asynchronous
-    actions: {
-        heroAttacks: ({ state, commit }) => {
-            const heroAttackPossibilities = state.heroAttackPossibilities;
-            const heroAttack = heroAttackPossibilities[randomPick(heroAttackPossibilities)];
-            const text = heroAttack.text.replace(/%ENEMY%/gi, state.enemyName);
+        heroAttacks: ({ state, commit, dispatch }) => {
+            const attackPossibilities = state.heroAttackPossibilities;
+            const attack = attackPossibilities[randomPick(attackPossibilities)];
+            const text = attack.text.replace(/%ENEMY%/gi, state.enemyName);
 
             setTimeout(() => {
-                commit('heroAttacks', {
+                commit('updateBattleConsole', {
                     text
                 })
             }, 1000)
 
-            if (heroAttack.damage) {
-                if (heroAttack.damage < enemiesStore.state.enemies[state.enemyName].enemyHealth) {
-                    const text = `${state.enemyName} loses ${heroAttack.damage} health`
-                    setTimeout(() => {
-                        commit('heroAttacks', {
-                            text
-                        })
-                    }, 2000)
-                }
-                // enemyHealth = enemyHealth - heroAttack.damage;
-              }
+            // health
+            if (attack.damage) {
+                const text = `${state.enemyName} loses ${attack.damage} health`
+                setTimeout(() => {
+                    commit('updateBattleConsole', {text})
+                    commit('updateEnemyHealth', {text})
+                }, 2000)
+            }
+
+            setTimeout(() => {
+                dispatch('enemyAttacks');
+            }, 3000)
+        },
+
+        enemyAttacks: ({ commit, state }) => {
+            // the enemy is alrady selected, and may already have some damage.
+            const attacks = enemiesStore.state.enemies[state.enemyName].attacks
+
+            // coin flip to pick the attack
+            const index = Object.keys(attacks)[randomPick(attacks)];
+
+            const text = attacks[index].text;
+            const damage = attacks[index].damage;
+
+            commit('updateBattleConsole', {text})
+
+            if (damage) {
+                const text = `You lose ${damage} health`
+                setTimeout(() => {
+                    commit('updateBattleConsole', {text})
+                    commit('updateHeroHealth', {damage})
+                }, 1000)
+            }
         },
     }
 });

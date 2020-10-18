@@ -11,8 +11,10 @@ import HeroActions from "./components/HeroActions.vue";
 import BattleConsole from "./components/BattleConsole.vue";
 import HeroStatus from "./components/HeroStatus.vue";
 
+
 export default {
   name: "App",
+
   components: {
     HeroActions,
     HeroStatus,
