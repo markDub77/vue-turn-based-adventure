@@ -1,3 +1,7 @@
+import mutations from './mutations'
+import actions from './actions'
+import getters from './getters'
+
 export default {
   namespaced: true,
 
@@ -30,5 +34,8 @@ export default {
       //     rubies: 30
       // }
     }
-  }
+  },
+  mutations,
+  actions,
+  getters
 }

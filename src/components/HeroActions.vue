@@ -20,9 +20,9 @@ export default {
 
   computed: {
     ...mapState({
-      heroSneakOption: state => state.heroActions.heroSneakOption,
-      heroAttackOption: state => state.heroActions.heroAttackOption,
-      heroDrinkPotionOption: state => state.heroActions.heroDrinkPotionOption,
+      heroSneakOption: state => state.heroSneakOption,
+      heroAttackOption: state => state.heroAttackOption,
+      heroDrinkPotionOption: state => state.heroDrinkPotionOption,
     })
   }
 };

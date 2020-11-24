@@ -1,8 +1,7 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import enemiesStore from './modules/enemies.store';
-import heroStatus from './modules/heroStatus.store';
-import heroActions from './modules/heroActions.store';
+import enemiesStore from './modules/enemies';
+import heroStore from './modules/hero';
 
 Vue.use(Vuex);
 
@@ -12,9 +11,8 @@ function randomPick(obj) {
 
 export default new Vuex.Store({
     modules: {
-        heroStatus,
-        heroActions,
-        enemiesStore
+        hero: heroStore,
+        enemy: enemiesStore
     },
     state: {
         enemyName: '',
@@ -74,7 +72,7 @@ export default new Vuex.Store({
         },
 
         updateHeroHealth: (state, { damage }) => {
-            heroStatus.state.heroHealth = heroStatus.state.heroHealth - damage
+            heroStore.state.heroHealth = heroStore.state.heroHealth - damage
         },
 
         updateEnemyHealth: (state, { damage }) => {

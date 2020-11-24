@@ -7,16 +7,12 @@
 </template>
 
 <script>
-import {mapState} from 'vuex'
+import { mapGetters } from 'vuex'
 
 export default {
   methods: {},
   computed: {
-    ...mapState({
-      heroHealth: state => state.heroStatus.heroHealth,
-      heroRubies: state => state.heroStatus.heroRubies,
-      heroPotions: state => state.heroStatus.heroPotions,
-    }),
+    ...mapGetters('hero', ['heroHealth','heroRubies','heroPotions'])
   }
 };
 </script>
