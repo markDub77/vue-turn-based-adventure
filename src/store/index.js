@@ -6,15 +6,18 @@ import randomPick from '../utilities/utilities';
 
 Vue.use(Vuex);
 
-export default new Vuex.Store({
+const store = new Vuex.Store({
     modules: {
         hero: heroStore,
         enemy: enemiesStore
     },
     state: {
         enemyName: '',
+        busy: false,
         battleConsole: [],
         heroAttackOption: true,
+        heroDrinkPotionOption: true,
+        heroSneakOption: true,
         beginBattle: {
             heroStarts: {
                 text: "You sneak up on a %ENEMY%. What do you want to do?",
@@ -62,7 +65,20 @@ export default new Vuex.Store({
     getters: {
         battleConsole(state) {
             return state.battleConsole
-        }
+        },
+        heroAttackOption(state) {
+            return state.heroAttackOption
+        },
+        heroSneakOption(state) {
+            return state.heroSneakOption
+        },
+        heroDrinkPotionOption(state) {
+            return state.heroDrinkPotionOption
+        },
+        busy(state) {
+            return state.busy
+        },
+
     },
     //mutating the state
     //mutations are always synchronous
@@ -77,6 +93,10 @@ export default new Vuex.Store({
 
         updateEnemyHealth: (state, { damage }) => {
             enemiesStore.state.enemies[state.enemyName].enemyHealth = enemiesStore.state.enemies[state.enemyName].enemyHealth - damage
+        },
+
+        busy: (state, arg ) => {
+            state.busy = state.busy = arg
         }
     },
     // commits the mutation, it's asynchronous
@@ -110,6 +130,8 @@ export default new Vuex.Store({
             const attackPossibilities = state.heroAttackPossibilities;
             const attack = attackPossibilities[randomPick(attackPossibilities)];
             const text = attack.text.replace(/%ENEMY%/gi, state.enemyName);
+
+            commit('busy',  true)
 
             setTimeout(() => {
                 commit('updateBattleConsole', {
@@ -148,8 +170,11 @@ export default new Vuex.Store({
                 setTimeout(() => {
                     commit('updateBattleConsole', {text})
                     commit('updateHeroHealth', {damage})
+                    commit('busy',  false )
                 }, 1000)
             }
         },
     }
 });
+
+export default store

@@ -6,6 +6,6 @@ import "nes.css/css/nes.min.css";
 Vue.config.productionTip = false
 
 new Vue({
-  store: store,
+  store,
   render: h => h(App),
 }).$mount('#app')

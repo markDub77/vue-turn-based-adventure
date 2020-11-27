@@ -11,17 +11,10 @@
 </template>
 
 <script>
-import {
-  mapActions,
-  mapGetters
-  // mapMutations
-} from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
   methods: {
-    // ...mapMutations([
-    //     'battleBegins'
-    // ]),
     ...mapActions([
         'battleBegins'
     ]),
@@ -40,12 +33,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters([
-      'battleConsole'
-      ])
-    // battleConsole() {
-    //   return this.$store.state.battleConsole;
-    // }
+    ...mapGetters(['battleConsole'])
   },
 
   updated: function() {
@@ -58,9 +46,6 @@ export default {
   created() {
     // the action way
     this.$store.dispatch('battleBegins')
-
-    // the mutation way
-    // this.battleBegins()
   },
 };
 </script>
