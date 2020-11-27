@@ -2,12 +2,9 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import enemiesStore from './modules/enemies';
 import heroStore from './modules/hero';
+import randomPick from '../utilities/utilities';
 
 Vue.use(Vuex);
-
-function randomPick(obj) {
-    return Math.floor(Math.random() * Object.keys(obj).length);
-}
 
 export default new Vuex.Store({
     modules: {
@@ -63,6 +60,9 @@ export default new Vuex.Store({
     //showing things, not mutating state
     //only needed if making computations for multiple components
     getters: {
+        battleConsole(state) {
+            return state.battleConsole
+        }
     },
     //mutating the state
     //mutations are always synchronous

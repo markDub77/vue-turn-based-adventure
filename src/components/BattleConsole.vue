@@ -13,6 +13,7 @@
 <script>
 import {
   mapActions,
+  mapGetters
   // mapMutations
 } from 'vuex'
 
@@ -31,6 +32,7 @@ export default {
       const battleConsoleListHeight = document.querySelector(
         ".battle-console__list"
       ).clientHeight;
+
       if (battleConsoleListHeight >= battleConsoleHeight) {
         document.querySelector(".battle-console").classList.add("overflowing");
       }
@@ -38,9 +40,12 @@ export default {
   },
 
   computed: {
-    battleConsole() {
-      return this.$store.state.battleConsole;
-    }
+    ...mapGetters([
+      'battleConsole'
+      ])
+    // battleConsole() {
+    //   return this.$store.state.battleConsole;
+    // }
   },
 
   updated: function() {
