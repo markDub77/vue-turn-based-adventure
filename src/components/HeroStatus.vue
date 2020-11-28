@@ -10,7 +10,6 @@
 import { mapGetters } from 'vuex'
 
 export default {
-  methods: {},
   computed: {
     ...mapGetters('hero', ['heroHealth','heroRubies','heroPotions'])
   }

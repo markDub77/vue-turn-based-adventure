@@ -12,12 +12,8 @@ const store = new Vuex.Store({
         enemy: enemiesStore
     },
     state: {
-        enemyName: '',
         busy: false,
         battleConsole: [],
-        heroAttackOption: true,
-        heroDrinkPotionOption: true,
-        heroSneakOption: true,
         beginBattle: {
             heroStarts: {
                 text: "You sneak up on a %ENEMY%. What do you want to do?",
@@ -28,89 +24,43 @@ const store = new Vuex.Store({
                 damage: 1
             }
         },
-        enemyAttackPossibilities: [
-            {
-                text: "The %ENEMY% swings and misses!"
-            },
-            {
-                text: "The %ENEMY% has hit you and injured you",
-                damage: 1
-            }
-        ],
-        heroAttackPossibilities: [
-            {
-            text: "You swing and miss!",
-            damage: 0
-            },
-            // {
-            //   text: "You cut it's head off!",
-            //   damage: 100
-            // },
-            // {
-            //   text: "You have slain the %ENEMY%!",
-            //   damage: 100
-            // },
-            {
-            text: "You have hit the %ENEMY% and injured it",
-            damage: 5
-            },
-            {
-            text: "You hit the %ENEMY% and made it mad!",
-            damage: 1
-            },
-        ]
     },
-    //showing things, not mutating state
-    //only needed if making computations for multiple components
+
     getters: {
         battleConsole(state) {
             return state.battleConsole
         },
-        heroAttackOption(state) {
-            return state.heroAttackOption
-        },
-        heroSneakOption(state) {
-            return state.heroSneakOption
-        },
-        heroDrinkPotionOption(state) {
-            return state.heroDrinkPotionOption
-        },
         busy(state) {
             return state.busy
         },
-
+        getEnemyName(state) {
+            return state.enemy.enemyName
+        }
     },
-    //mutating the state
-    //mutations are always synchronous
+
     mutations: {
         updateBattleConsole: (state, { text }) => {
             state.battleConsole.push(text);
         },
-
-        updateHeroHealth: (state, { damage }) => {
-            heroStore.state.heroHealth = heroStore.state.heroHealth - damage
-        },
-
-        updateEnemyHealth: (state, { damage }) => {
-            enemiesStore.state.enemies[state.enemyName].enemyHealth = enemiesStore.state.enemies[state.enemyName].enemyHealth - damage
-        },
-
         busy: (state, arg ) => {
             state.busy = state.busy = arg
-        }
+        },
+        setEnemy: (state) => {
+            // coin flip to pick enemy
+            const enemies = state.enemy.enemies;
+            state.enemy.enemyName = Object.keys(enemies)[randomPick(enemies)];
+        },
     },
-    // commits the mutation, it's asynchronous
+
     actions: {
-        battleBegins: ({state, commit}) => {
-            const enemies = enemiesStore.state.enemies;
+        battleBegins: ({state, commit, getters}) => {
             const battleIntro = state.beginBattle
 
-            // coin flip to pick enemy
-            state.enemyName = Object.keys(enemies)[randomPick(enemies)];
+            commit('setEnemy')
 
             // coin flip to pick who goes first
             const index = Object.keys(battleIntro)[randomPick(battleIntro)];
-            const text = battleIntro[index].text.replace(/%ENEMY%/gi, state.enemyName);
+            const text = battleIntro[index].text.replace(/%ENEMY%/gi, getters.getEnemyName);
             const damage = battleIntro[index].damage;
 
             commit('updateBattleConsole', {text})
@@ -121,59 +71,10 @@ const store = new Vuex.Store({
 
                 setTimeout(() => {
                     commit('updateBattleConsole', {text})
-                    commit('updateHeroHealth', {damage})
+                    commit('hero/updateHeroHealth', {damage})
                 }, 1000);
             }
-        },
-
-        heroAttacks: ({ state, commit, dispatch }) => {
-            const attackPossibilities = state.heroAttackPossibilities;
-            const attack = attackPossibilities[randomPick(attackPossibilities)];
-            const text = attack.text.replace(/%ENEMY%/gi, state.enemyName);
-
-            commit('busy',  true)
-
-            setTimeout(() => {
-                commit('updateBattleConsole', {
-                    text
-                })
-            }, 1000)
-
-            // health
-            if (attack.damage) {
-                const text = `${state.enemyName} loses ${attack.damage} health`
-                setTimeout(() => {
-                    commit('updateBattleConsole', {text})
-                    commit('updateEnemyHealth', {text})
-                }, 2000)
-            }
-
-            setTimeout(() => {
-                dispatch('enemyAttacks');
-            }, 3000)
-        },
-
-        enemyAttacks: ({ commit, state }) => {
-            // the enemy is alrady selected, and may already have some damage.
-            const attacks = enemiesStore.state.enemies[state.enemyName].attacks
-
-            // coin flip to pick the attack
-            const index = Object.keys(attacks)[randomPick(attacks)];
-
-            const text = attacks[index].text;
-            const damage = attacks[index].damage;
-
-            commit('updateBattleConsole', {text})
-
-            if (damage) {
-                const text = `You lose ${damage} health`
-                setTimeout(() => {
-                    commit('updateBattleConsole', {text})
-                    commit('updateHeroHealth', {damage})
-                    commit('busy',  false )
-                }, 1000)
-            }
-        },
+        }
     }
 });
 

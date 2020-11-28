@@ -1,7 +1,7 @@
 <template>
   <div class="actions nes-container">
     <button
-      :disabled='!heroAttackOption'
+      :disabled='busy'
       :class="[busy ? 'is-disabled' : '']"
       class="actions__button nes-btn"
       @click="heroAttacks"
@@ -26,11 +26,13 @@ import { mapActions, mapGetters } from 'vuex'
 
 export default {
   methods: {
-    ...mapActions(['heroAttacks']),
+    ...mapActions('hero',['heroAttacks']),
   },
 
   computed: {
-    ...mapGetters(['busy', 'heroSneakOption', 'heroAttackOption', 'heroDrinkPotionOption'])
+    ...mapGetters(['busy']),
+    ...mapGetters('hero', ['heroSneakOption', 'heroAttackOption', 'heroDrinkPotionOption']),
+
   }
 };
 </script>

@@ -6,6 +6,16 @@ export default {
   namespaced: true,
 
   state: {
+    enemyName: '',
+    enemyAttackPossibilities: [
+      {
+          text: "The %ENEMY% swings and misses!"
+      },
+      {
+          text: "The %ENEMY% has hit you and injured you",
+          damage: 1
+      }
+    ],
     enemies : {
       Orc: {
         enemyHealth: 50,
